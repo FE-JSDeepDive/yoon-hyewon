@@ -78,3 +78,54 @@
 1. var로 선언한 변수 → window 객체에 등록됨
 2. let과 const로 선언한 변수 → window 객체에 등록되지 않음
 3. 선언 없이 변수를 사용하면 → window 객체에 자동 등록됨 (비권장)
+
+## 6장
+
+### 1. JavaScript에서 null과 undefined의 차이는 무엇인가요?
+
+- null : "값이 없음"을 개발자가 의도적으로 설정
+- undefined: "값이 할당되지 않음" ,변수가 선언되었지만 값이 할당되지 않았을 때 자동으로 부여되는 값 (변수가 선언되었지만 값이 없음)
+
+```js
+let a; // undefined (값이 할당되지 않음)
+console.log(a); // undefined
+
+let b = null; // 명시적으로 "값 없음"을 표현
+console.log(b); // null
+```
+
+### 2. null을 숫자로 변환하면 어떤 값이 나오나요?
+
+- 숫자 0으로 변환됨
+  +) undefined는 NaN으로 변환되며, null == 0은 false지만 Number(null) === 0은 true가 됩니다.
+
+## 7장
+
+### 1. null == undefined는 true인데, null === undefined는 false인 이유는?
+
+1. ==(느슨한 비교): 타입 변환 후 값을 비교
+
+- JavaScript의 동등 연산자(==) 규칙에 따르면, null과 undefined는 서로 같음으로 취급됩니다.
+- null과 undefined가 모두 “값이 없음”을 표현하는 특수한 값이기 때문입니다.
+
+2. ===(엄격한 비교): 타입 변환 없이 값을 비교 // 타입 변환 없이 비교하며, 두 값이 데이터 타입까지 일치해야 true를 반환합니다.
+
+- null의 타입: "object"
+- undefined의 타입: "undefined"
+- 서로 타입이 다르므로 엄격한 비교에서는 false가 반환됩니다.
+
+  ```js
+  console.log(0 == "0"); // true (문자열 "0"이 숫자 0으로 변환됨)
+  console.log(0 === "0"); // false (타입이 다름)
+  console.log(null == undefined); // true (둘 다 값이 비어있다고 간주)
+  console.log(null === undefined); // false (타입이 다름)
+  ```
+
+### 2. "0" == 0의 결과는 무엇이며, "0" === 0은 왜 다르게 평가되나요?
+
+- "0" == 0에서는 JavaScript의 느슨한 비교(==)가 문자열을 숫자로 변환하여 비교하기 때문에 true가 됩니다. 반면 === 연산자는 타입 변환 없이 비교하기 때문에, "0"은 string이고 0은 number여서 false가 됩니다.
+
+### 3. i++와 ++i의 차이는 무엇인가요?
+
+- i++: 현재 값을 반환 후 증가
+- ++i: 증가 후 새로운 값 반환
