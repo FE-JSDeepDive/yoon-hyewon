@@ -54,6 +54,7 @@ console.log(add10(10)); // "캐시에서 가져옴!" -> 20
 
 <br/>
 => 상세 설명:
+<br/>
 	1.	memoizedAdd()를 호출하면, cache = {} 객체가 생성됨 <br/>
 	•	cache는 클로저로 내부 함수에서 계속 유지됨 <br/>
     
