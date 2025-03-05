@@ -76,6 +76,7 @@ console.log(add10(10)); // "캐시에서 가져옴!" -> 20
 
 > 클로저는 고차 함수가 내부 변수를 은닉할 수 있도록 하는 기법입니다.
 > 고차 함수가 함수를 반환할 때, 반환된 함수는 부모 스코프의 변수에 접근할 수 있습니다.
+> Private 값 처럼 변경되지 않고 스코프내에 계속해서 유지할 수 있도록 클로저(Closure)를 사용하도록 한다.
 >
 > ```js
 > function multiplier(factor) {
@@ -120,4 +121,210 @@ function memoizedFibonacci() {
 
 const fib = memoizedFibonacci();
 console.log(fib(40)); // 훨씬 빠름 (캐싱 활용)
+```
+
+## 스터디 회고록:
+
+### 1. Redux와 Observer 패턴
+
+### 2. 싱글톤 패턴
+
+> 싱글톤 패턴: 클래스의 인스턴스를 하나만 생성하고, 어디서든 인스턴스를 공유할 수 있도록 보장하는 디자인 패턴이다. 전역적으로 유일한 객체를 제공하는 패턴이다.
+
+```java
+public class Singleton {
+    private static final Singleton instance = new Singleton();
+
+    private Singleton() {} // private 생성자
+
+    public static Singleton getInstance() {
+        return instance;
+    }
+}
+```
+
+- JS에서 싱글톤 패턴 구현시 ....
+
+1. 객체 리터럴 사용
+
+```js
+const Singleton = {
+  name: "Singleton Instance",
+  getName: function () {
+    return this.name;
+  },
+};
+
+// 사용 예시
+console.log(Singleton.getName()); // "Singleton Instance"
+```
+
+2. 즉시 실행 함수(클로저) 사용
+
+```js
+const Singleton = (function () {
+  let instance;
+
+  function createInstance() {
+    return {
+      name: "Singleton Instance",
+      getName: function () {
+        return this.name;
+      },
+    };
+  }
+
+  return {
+    getInstance: function () {
+      if (!instance) {
+        instance = createInstance();
+      }
+      return instance;
+    },
+  };
+})();
+
+// 사용 예시
+const s1 = Singleton.getInstance();
+const s2 = Singleton.getInstance();
+
+console.log(s1 === s2); // true (동일한 인스턴스를 공유)
+console.log(s1.getName()); // "Singleton Instance"
+```
+
+3. 클래스 기반 싱글톤 (ES6 이후)
+
+```js
+class Singleton {
+  constructor() {
+    if (!Singleton.instance) {
+      Singleton.instance = this;
+      this.name = "Singleton Instance";
+    }
+    return Singleton.instance;
+  }
+
+  getName() {
+    return this.name;
+  }
+}
+
+// 사용 예시
+const s1 = new Singleton();
+const s2 = new Singleton();
+
+console.log(s1 === s2); // true (동일한 인스턴스를 공유)
+console.log(s1.getName()); // "Singleton Instance"
+```
+
+4. Symbol를 사용한 싱글톤 (ES6 이후)
+
+```js
+const Singleton = (function () {
+  const INSTANCE = Symbol("instance");
+
+  class Singleton {
+    constructor() {
+      if (!Singleton[INSTANCE]) {
+        Singleton[INSTANCE] = this;
+        this.name = "Singleton Instance";
+      }
+      return Singleton[INSTANCE];
+    }
+
+    getName() {
+      return this.name;
+    }
+  }
+
+  return Singleton;
+})();
+
+// 사용 예시
+const s1 = new Singleton();
+const s2 = new Singleton();
+
+console.log(s1 === s2); // true
+console.log(s1.getName()); // "Singleton Instance"
+```
+
+5. 모듈 패턴 (ES6 이후)
+
+```js
+// singleton.js (싱글톤 정의 파일)
+class Singleton {
+  constructor() {
+    if (!Singleton.instance) {
+      Singleton.instance = this;
+      this.name = "Singleton Instance";
+    }
+    return Singleton.instance;
+  }
+
+  getName() {
+    return this.name;
+  }
+}
+
+const instance = new Singleton();
+export default instance;
+
+// main.js (사용 파일)
+import Singleton from "./singleton.js";
+
+console.log(Singleton.getName()); // "Singleton Instance"
+```
+
+### 3. 즉시 실행 함수
+
+- 정의되자마자 바로 실행되는 함수를 의미합니다.
+
+1. 즉시 실행됨 → 함수를 호출할 필요 없이 정의하자마자 실행됨.
+2. 전역 변수 오염 방지 → 함수 내부 변수는 지역 변수(Scope) 가 되어, 외부에서 접근 불가능.
+3. 클로저(Closure) 활용 가능 → 내부 변수는 보호(private) 되고, 외부에서 조작할 수 없음.
+   <br/>
+
+**[목적]**
+<br/>
+
+- 변수를 전역(global scope)으로 선언하는 것을 피하기 위함
+- 플러그인이나 라이브러리 등을 만들 때 많이 사용됨
+- let, const 변수 키워드가 나오면서 사라진 추세
+  예시)
+
+1. 🔹 ES6 블록 스코프(let, const) 사용
+
+```js
+{
+  let message = "Hello, ES6!";
+  console.log(message); // "Hello, ES6!"
+}
+
+console.log(typeof message); // undefined (블록 스코프 유지)
+```
+
+2. 🔹 ES6 모듈(Modules) 사용: 캡슐화 가능
+
+```js
+// 📌 module.js
+export const Counter = (function () {
+  let count = 0;
+
+  return {
+    increment: function () {
+      count++;
+      console.log(count);
+    },
+    decrement: function () {
+      count--;
+      console.log(count);
+    },
+  };
+})();
+
+// 📌 main.js
+import { Counter } from "./module.js";
+
+Counter.increment(); // 1
+Counter.increment(); // 2
 ```
