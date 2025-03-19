@@ -1,8 +1,8 @@
-## 1. useEffect에서 setTimeout 문제
+# 1. useEffect에서 setTimeout 문제
 
 - React의 useEffect에서 setTimeout을 사용할 때 흔히 발생하는 문제는 this가 아니라, 클로저 문제로 인해 오래된 상태를 참조하는 것입니다.
 
-### 1-1. setTimeout이 초기 상태를 참조하는 문제
+## 1-1. setTimeout이 초기 상태를 참조하는 문제
 
 ```js
 import { useState, useEffect } from "react";
@@ -47,10 +47,13 @@ function MyComponent() {
    }, []);
    ```
 
-### 1-2. 기술 면접 정리
+---
 
-1. useEffect에서 setTimeout을 사용할 때 클로저 문제(Old State Reference)란?
-   **질문**
+## 1-2. 기술 면접 정리
+
+### 1. useEffect에서 setTimeout을 사용할 때 클로저 문제(Old State Reference)란?
+
+**질문**
 
 - useEffect에서 setTimeout을 사용할 때, 왜 이전 상태 값이 출력되는 경우가 있나요?
   <br/>
@@ -60,8 +63,9 @@ function MyComponent() {
 - useEffect의 의존성 배열을 []로 설정하면, 컴포넌트가 처음 렌더링될 때만 실행되므로 setTimeout 내부에서 클로저로 초기 상태 값을 캡처하게 됩니다.
 - 즉, 이후 상태가 변경되어도 setTimeout 내부에서는 여전히 초기 상태 값을 참조하기 때문에, 오래된 상태가 출력될 수 있습니다.
 
-2. useEffect에서 setTimeout이 언마운트된 후에도 실행되는 문제
-   **질문**
+### 2. useEffect에서 setTimeout이 언마운트된 후에도 실행되는 문제
+
+**질문**
 
 - useEffect에서 setTimeout을 사용할 때, 컴포넌트가 언마운트되면 어떤 문제가 발생할 수 있나요? 이를 어떻게 해결할 수 있을까요?
   <br/>
@@ -82,8 +86,9 @@ useEffect(() => {
 }, [count]);
 ```
 
-3. setTimeout과 React Strict Mode의 관계
-   **질문**
+### 3. setTimeout과 React Strict Mode의 관계
+
+**질문**
 
 - React Strict Mode가 setTimeout과 관련된 문제를 유발할 수 있나요?
   <br/>
@@ -111,7 +116,32 @@ function MyComponent() {
 }
 ```
 
-## 1-3. 실행 컨텍스트(Execution Context)
+### 4. 자바스크립트에서 정확한 지연 기능(Precise Delay)을 제공하지 않는 이유
+
+- 자바스크립트는 **싱글 스레드 기반 비동기 언어**로 이벤트 루프 모델을 사용합니다. 즉, 한 번에 하나의 작업만 처리 가능하며, 특정 실행 중에는 다른 코드 실행이 블로킹될 수 있습니다.
+- setTimeout이나 setInterval은 정확한 타이밍 보장을 하지 않음. 이벤트 루프가 현재 실행 중인 코드(콜 스택)처리를 먼저 끝내야 실행된다.
+  즉, 정확한 시간이 되면 실행되는 것이 아니라, 지정된 시간이 지난 후 태스크 큐에 추가된다. 실행되려면 콜 스텍이 비어있어야 한다.
+
+**setTimeout(0)이 즉시 실행되지 않는 이유는?**
+
+- setTimeout(0)을 사용하면 0ms 후 실행될 것처럼 보이지만, 즉시 실행되지 않고 이벤트 루프의 태스크 큐에 추가됨. 따라서 콜 스택이 비워진 후 실행됨.
+
+**해결책**
+
+- Node.js에서는 setTimeout보다 정확한 타이머를 제공하는 방법으로 process.hrtime()을 사용할 수 있습니다.
+
+```js
+const start = process.hrtime();
+
+setTimeout(() => {
+  const diff = process.hrtime(start);
+  console.log(`Actual delay: ${diff[0]}s ${diff[1] / 1e6}ms`);
+}, 1000);
+```
+
+---
+
+# 1-3. 실행 컨텍스트(Execution Context)
 
 1. 실행 컨텍스트의 생성 과정에서 변수는 어떻게 처리되나요?
 
